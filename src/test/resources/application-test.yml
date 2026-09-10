@@ -10,6 +10,10 @@ app:
   prices:
     # The suite never touches the network: prices are whatever a test sets.
     provider: manual
+  admin:
+    # Off by default so the "last administrator" guardrail tests are deterministic.
+    # AdminSeederIT re-enables it explicitly.
+    seed-enabled: false
 
 logging:
   level:

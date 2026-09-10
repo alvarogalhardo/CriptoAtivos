@@ -60,6 +60,14 @@ app:
       vs-currency: usd
       timeout: PT5S
 
+  admin:
+    # Creates the first administrator on an empty database so the API is usable
+    # immediately. ALWAYS set ADMIN_PASSWORD outside a local demo.
+    seed-enabled: ${ADMIN_SEED_ENABLED:true}
+    email: ${ADMIN_EMAIL:admin@criptoativos.local}
+    password: ${ADMIN_PASSWORD:change-me-immediately}
+    cpf: ${ADMIN_CPF:16899535009}
+
 logging:
   level:
     com.criptoativos: INFO
