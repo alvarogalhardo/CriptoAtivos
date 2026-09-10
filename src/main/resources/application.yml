@@ -32,6 +32,15 @@ management:
     health:
       show-details: when_authorized
 
+app:
+  security:
+    jwt:
+      # Generated with openssl; never committed. See README for the two commands.
+      public-key: ${JWT_PUBLIC_KEY:classpath:certs/public.pem}
+      private-key: ${JWT_PRIVATE_KEY:classpath:certs/private.pem}
+      issuer: criptoativos-api
+      ttl: PT2H
+
 logging:
   level:
     com.criptoativos: INFO

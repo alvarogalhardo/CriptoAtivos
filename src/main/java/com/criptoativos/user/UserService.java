@@ -48,6 +48,13 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("User %s does not exist.".formatted(id)));
     }
 
+    @Transactional
+    public User rename(UUID id, String name) {
+        User user = requireById(id);
+        user.rename(name.trim());
+        return user;
+    }
+
     @Transactional(readOnly = true)
     public User requireByEmail(String email) {
         return userRepository

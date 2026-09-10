@@ -1,5 +1,7 @@
 package com.criptoativos.auth;
 
+import com.criptoativos.auth.dto.LoginRequest;
+import com.criptoativos.auth.dto.TokenResponse;
 import com.criptoativos.user.UserService;
 import com.criptoativos.user.dto.RegisterRequest;
 import com.criptoativos.user.dto.UserResponse;
@@ -16,9 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserService userService;
+    private final AuthService authService;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, AuthService authService) {
         this.userService = userService;
+        this.authService = authService;
+    }
+
+    @PostMapping("/login")
+    public TokenResponse login(@Valid @RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 
     @PostMapping("/register")
