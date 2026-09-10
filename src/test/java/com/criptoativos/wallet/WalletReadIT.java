@@ -95,6 +95,33 @@ class WalletReadIT extends AbstractIT {
     }
 
     @Test
+    void thePortfolioReportsProfitAfterAPriceRise() throws Exception {
+        mockMvc.perform(
+                post("/api/v1/wallet/deposits")
+                        .header(HttpHeaders.AUTHORIZATION, bearer)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"amount\":\"5000.00\"}"));
+        mockMvc.perform(
+                post("/api/v1/transactions/buy")
+                        .header(HttpHeaders.AUTHORIZATION, bearer)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"symbol\":\"BTC\",\"quantity\":\"2\"}")); // 2 @ 1000 = 2000
+
+        assetService.updatePrice("BTC", new BigDecimal("1500.00"));
+
+        mockMvc.perform(get("/api/v1/wallet").header(HttpHeaders.AUTHORIZATION, bearer))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cashBalance").value(3000.00))
+                .andExpect(jsonPath("$.investedValue").value(2000.00))
+                .andExpect(jsonPath("$.marketValue").value(3000.00))
+                .andExpect(jsonPath("$.totalValue").value(6000.00))
+                .andExpect(jsonPath("$.unrealisedPnl").value(1000.00))
+                .andExpect(jsonPath("$.unrealisedPnlPct").value(50.0))
+                .andExpect(jsonPath("$.holdings[0].currentPrice").value(1500))
+                .andExpect(jsonPath("$.holdings[0].unrealisedPnl").value(1000.00));
+    }
+
+    @Test
     void transactionHistorySerialisesOutsideATransaction() throws Exception {
         mockMvc.perform(
                 post("/api/v1/wallet/deposits")

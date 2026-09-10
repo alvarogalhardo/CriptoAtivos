@@ -44,6 +44,8 @@ class WalletIT extends AbstractIT {
         mockMvc.perform(get("/api/v1/wallet").header(HttpHeaders.AUTHORIZATION, bearer))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cashBalance").value(0))
+                .andExpect(jsonPath("$.totalValue").value(0))
+                .andExpect(jsonPath("$.unrealisedPnlPct").value(0))
                 .andExpect(jsonPath("$.holdings").isEmpty());
     }
 

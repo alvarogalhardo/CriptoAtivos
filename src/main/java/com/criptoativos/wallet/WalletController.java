@@ -19,25 +19,27 @@ import org.springframework.web.bind.annotation.RestController;
 public class WalletController {
 
     private final WalletService walletService;
+    private final PortfolioService portfolioService;
 
-    public WalletController(WalletService walletService) {
+    public WalletController(WalletService walletService, PortfolioService portfolioService) {
         this.walletService = walletService;
+        this.portfolioService = portfolioService;
     }
 
     @GetMapping
     public WalletResponse myWallet() {
-        return WalletResponse.from(walletService.requireByUserId(SecurityUtils.currentUserId()));
+        return portfolioService.summarise(walletService.requireByUserId(SecurityUtils.currentUserId()));
     }
 
     @PostMapping("/deposits")
     public WalletResponse deposit(@Valid @RequestBody CashAmountRequest request) {
-        return WalletResponse.from(
+        return portfolioService.summarise(
                 walletService.deposit(SecurityUtils.currentUserId(), request.amount()));
     }
 
     @PostMapping("/withdrawals")
     public WalletResponse withdraw(@Valid @RequestBody CashAmountRequest request) {
-        return WalletResponse.from(
+        return portfolioService.summarise(
                 walletService.withdraw(SecurityUtils.currentUserId(), request.amount()));
     }
 }
