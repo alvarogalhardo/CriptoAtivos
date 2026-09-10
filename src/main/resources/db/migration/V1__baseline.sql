@@ -19,7 +19,10 @@ create table users (
     name                    varchar(120) not null,
     email                   varchar(255) not null unique,
     password_hash           varchar(72)  not null,
-    cpf                     char(11)     not null unique,
+    -- varchar, not char: Postgres CHAR is blank-padded, which makes equality
+    -- comparisons depend on trailing whitespace. The check constraint below
+    -- enforces the fixed length instead.
+    cpf                     varchar(11)  not null unique,
     role                    varchar(20)  not null,
     two_factor_enabled      boolean      not null default false,
     two_factor_secret       varchar(120),
