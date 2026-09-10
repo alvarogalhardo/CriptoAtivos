@@ -17,7 +17,9 @@ spring:
     locations: classpath:db/migration
 
 server:
-  port: ${PORT:8080}
+  # 8080 is commonly taken by Docker Desktop's WSL relay on Windows, so default to
+  # 8081 and let PORT override. The container listens on 8080 internally.
+  port: ${PORT:8081}
   error:
     include-stacktrace: never
 
