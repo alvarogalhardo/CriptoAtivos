@@ -11,4 +11,5 @@ import org.springframework.core.io.Resource;
  * the image and be mounted at deploy time.
  */
 @ConfigurationProperties("app.security.jwt")
-public record JwtProperties(Resource publicKey, Resource privateKey, String issuer, Duration ttl) {}
+public record JwtProperties(
+        Resource publicKey, Resource privateKey, String issuer, Duration ttl, Duration challengeTtl) {}

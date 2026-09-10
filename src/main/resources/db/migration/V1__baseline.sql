@@ -25,7 +25,9 @@ create table users (
     cpf                     varchar(11)  not null unique,
     role                    varchar(20)  not null,
     two_factor_enabled      boolean      not null default false,
-    two_factor_secret       varchar(120),
+    -- AES ciphertext, hex-encoded with a prepended IV: a 32-char Base32 secret
+    -- becomes 128 characters, so this is deliberately roomy.
+    two_factor_secret       varchar(255),
     two_factor_confirmed_at timestamptz,
     created_at              timestamptz  not null default now(),
     updated_at              timestamptz  not null default now(),

@@ -41,6 +41,13 @@ public class User {
     @Column(name = "two_factor_enabled", nullable = false)
     private boolean twoFactorEnabled;
 
+    /** AES ciphertext of the Base32 TOTP secret — never the raw secret. */
+    @Column(name = "two_factor_secret", length = 255)
+    private String twoFactorSecret;
+
+    @Column(name = "two_factor_confirmed_at")
+    private Instant twoFactorConfirmedAt;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -94,6 +101,24 @@ public class User {
         this.role = role;
     }
 
+    /** Stores a secret that is not yet active: 2FA turns on only once a code is confirmed. */
+    public void stageTwoFactorSecret(String encryptedSecret) {
+        this.twoFactorSecret = encryptedSecret;
+        this.twoFactorEnabled = false;
+        this.twoFactorConfirmedAt = null;
+    }
+
+    public void confirmTwoFactor() {
+        this.twoFactorEnabled = true;
+        this.twoFactorConfirmedAt = Instant.now();
+    }
+
+    public void disableTwoFactor() {
+        this.twoFactorEnabled = false;
+        this.twoFactorSecret = null;
+        this.twoFactorConfirmedAt = null;
+    }
+
     public UUID getId() {
         return id;
     }
@@ -120,6 +145,14 @@ public class User {
 
     public boolean isTwoFactorEnabled() {
         return twoFactorEnabled;
+    }
+
+    public String getTwoFactorSecret() {
+        return twoFactorSecret;
+    }
+
+    public Instant getTwoFactorConfirmedAt() {
+        return twoFactorConfirmedAt;
     }
 
     public Instant getCreatedAt() {

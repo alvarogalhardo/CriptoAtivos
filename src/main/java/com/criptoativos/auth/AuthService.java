@@ -1,7 +1,7 @@
 package com.criptoativos.auth;
 
 import com.criptoativos.auth.dto.LoginRequest;
-import com.criptoativos.auth.dto.TokenResponse;
+import com.criptoativos.auth.dto.LoginResponse;
 import com.criptoativos.user.User;
 import com.criptoativos.user.UserRepository;
 import java.util.Optional;
@@ -35,7 +35,7 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public TokenResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         Optional<User> candidate = userRepository.findByEmailIgnoreCase(request.email());
         String hash = candidate.map(User::getPasswordHash).orElse(DUMMY_HASH);
         boolean matches = passwordEncoder.matches(request.password(), hash);
@@ -44,6 +44,10 @@ public class AuthService {
             // Identical message either way: never reveal whether the account exists.
             throw new BadCredentialsException(GENERIC_FAILURE);
         }
-        return TokenResponse.bearer(tokenService.generateToken(candidate.get()), tokenService.ttlSeconds());
+
+        User user = candidate.get();
+        return user.isTwoFactorEnabled()
+                ? LoginResponse.challenge(tokenService.generateChallengeToken(user))
+                : LoginResponse.accessGranted(tokenService.generateToken(user), tokenService.ttlSeconds());
     }
 }

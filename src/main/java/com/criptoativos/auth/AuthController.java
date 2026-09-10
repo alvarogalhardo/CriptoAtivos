@@ -1,7 +1,7 @@
 package com.criptoativos.auth;
 
 import com.criptoativos.auth.dto.LoginRequest;
-import com.criptoativos.auth.dto.TokenResponse;
+import com.criptoativos.auth.dto.LoginResponse;
 import com.criptoativos.user.UserService;
 import com.criptoativos.user.dto.RegisterRequest;
 import com.criptoativos.user.dto.UserResponse;
@@ -26,7 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public TokenResponse login(@Valid @RequestBody LoginRequest request) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
     }
 

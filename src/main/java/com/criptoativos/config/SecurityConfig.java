@@ -1,5 +1,6 @@
 package com.criptoativos.config;
 
+import com.criptoativos.auth.TokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -49,6 +50,9 @@ public class SecurityConfig {
                         auth ->
                                 auth.requestMatchers("/api/v1/auth/register", "/api/v1/auth/login")
                                         .permitAll()
+                                        // Only a challenge token may complete the 2FA exchange.
+                                        .requestMatchers("/api/v1/auth/2fa/verify")
+                                        .hasRole(TokenService.CHALLENGE_SCOPE)
                                         .requestMatchers(HttpMethod.GET, "/api/v1/assets", "/api/v1/assets/**")
                                         .permitAll()
                                         .requestMatchers("/actuator/health", "/actuator/info")

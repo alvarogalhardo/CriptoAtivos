@@ -40,6 +40,16 @@ app:
       private-key: ${JWT_PRIVATE_KEY:classpath:certs/private.pem}
       issuer: criptoativos-api
       ttl: PT2H
+      # Short-lived token issued between password check and 2FA code. It carries
+      # only the 2FA_CHALLENGE authority, never USER or ADMIN.
+      challenge-ttl: PT5M
+    twofactor:
+      issuer: CriptoAtivos
+      recovery-code-count: 10
+    encryption:
+      # TOTP secrets are password-equivalent, so they are encrypted at rest.
+      password: ${ENCRYPTION_PASSWORD:dev-only-change-me}
+      salt: ${ENCRYPTION_SALT:5c0744940b5c369b}
 
 logging:
   level:
