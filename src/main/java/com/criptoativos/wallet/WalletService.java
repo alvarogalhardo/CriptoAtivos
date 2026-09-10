@@ -23,9 +23,10 @@ public class WalletService {
         this.operationRepository = operationRepository;
     }
 
+    /** Read path: fetches holdings eagerly so the response can be mapped after the session closes. */
     @Transactional(readOnly = true)
     public Wallet requireByUserId(UUID userId) {
-        return walletRepository.findByUserId(userId).orElseThrow(() -> missing(userId));
+        return walletRepository.findWithHoldingsByUserId(userId).orElseThrow(() -> missing(userId));
     }
 
     @Transactional
@@ -34,7 +35,7 @@ public class WalletService {
         wallet.credit(amount);
         operationRepository.save(CashOperation.deposit(wallet.getUser(), amount));
         log.info("DEPOSIT user={} amount={} balance={}", userId, amount, wallet.getCashBalance());
-        return wallet;
+        return withHoldings(userId);
     }
 
     @Transactional
@@ -43,7 +44,16 @@ public class WalletService {
         wallet.debit(amount); // throws before anything is recorded
         operationRepository.save(CashOperation.withdrawal(wallet.getUser(), amount));
         log.info("WITHDRAWAL user={} amount={} balance={}", userId, amount, wallet.getCashBalance());
-        return wallet;
+        return withHoldings(userId);
+    }
+
+    /**
+     * Re-reads through the entity graph so the returned wallet can be mapped to a response after the
+     * transaction ends. Same persistence context, so this initialises the managed instance rather
+     * than loading a second one.
+     */
+    private Wallet withHoldings(UUID userId) {
+        return walletRepository.findWithHoldingsByUserId(userId).orElseThrow(() -> missing(userId));
     }
 
     private Wallet requireLocked(UUID userId) {
