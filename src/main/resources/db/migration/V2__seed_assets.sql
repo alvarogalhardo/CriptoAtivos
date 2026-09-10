@@ -9,3 +9,8 @@ insert into assets (asset_type, symbol, name, description, current_price, extern
     ('CRYPTO', 'ADA', 'Cardano',  'Proof-of-stake blockchain with a research-led design.', 0, 'cardano'),
     ('CRYPTO', 'XRP', 'XRP',      'Digital asset for cross-border settlement.',         0, 'ripple')
 on conflict (symbol) do nothing;
+
+-- Every asset needs an inventory row, or the first buy fails looking for one.
+insert into asset_inventory (asset_id, available_quantity)
+select id, 1000 from assets
+on conflict (asset_id) do nothing;

@@ -1,6 +1,8 @@
 package com.criptoativos.asset;
 
 import com.criptoativos.asset.dto.AssetDtos.CreateCryptoAssetRequest;
+import com.criptoativos.asset.inventory.AssetInventory;
+import com.criptoativos.asset.inventory.AssetInventoryRepository;
 import com.criptoativos.common.exception.ConflictException;
 import com.criptoativos.common.exception.NotFoundException;
 import java.math.BigDecimal;
@@ -13,9 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class AssetService {
 
     private final AssetRepository assetRepository;
+    private final AssetInventoryRepository inventoryRepository;
 
-    public AssetService(AssetRepository assetRepository) {
+    public AssetService(
+            AssetRepository assetRepository, AssetInventoryRepository inventoryRepository) {
         this.assetRepository = assetRepository;
+        this.inventoryRepository = inventoryRepository;
     }
 
     @Transactional(readOnly = true)
@@ -44,7 +49,10 @@ public class AssetService {
                         request.description(),
                         request.currentPrice(),
                         request.externalId());
-        return assetRepository.save(asset);
+        CryptoAsset saved = assetRepository.save(asset);
+        // An asset with no inventory row would blow up on its first buy.
+        inventoryRepository.save(AssetInventory.forAsset(saved, BigDecimal.ZERO));
+        return saved;
     }
 
     /**
