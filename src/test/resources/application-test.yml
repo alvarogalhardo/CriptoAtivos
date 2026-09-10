@@ -6,6 +6,11 @@ spring:
   flyway:
     clean-disabled: false
 
+app:
+  prices:
+    # The suite never touches the network: prices are whatever a test sets.
+    provider: manual
+
 logging:
   level:
     org.springframework.test: WARN

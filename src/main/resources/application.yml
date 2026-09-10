@@ -51,6 +51,15 @@ app:
       password: ${ENCRYPTION_PASSWORD:dev-only-change-me}
       salt: ${ENCRYPTION_SALT:5c0744940b5c369b}
 
+  prices:
+    # coingecko = live market data; manual = admin-set prices only, no network.
+    provider: ${PRICE_PROVIDER:coingecko}
+    refresh-cron: ${PRICE_REFRESH_CRON:0 */5 * * * *}
+    coingecko:
+      base-url: https://api.coingecko.com/api/v3
+      vs-currency: usd
+      timeout: PT5S
+
 logging:
   level:
     com.criptoativos: INFO
