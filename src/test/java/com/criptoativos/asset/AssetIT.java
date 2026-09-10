@@ -57,7 +57,10 @@ class AssetIT extends AbstractIT {
 
     @Test
     void rejectsAssetCreationWithoutAToken() throws Exception {
-        mockMvc.perform(post("/api/v1/assets").contentType(MediaType.APPLICATION_JSON).content(NEW_ASSET))
+        mockMvc.perform(
+                        post("/api/v1/assets")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(NEW_ASSET))
                 .andExpect(status().isUnauthorized());
     }
 

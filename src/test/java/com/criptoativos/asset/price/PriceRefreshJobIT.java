@@ -56,7 +56,8 @@ class PriceRefreshJobIT extends AbstractIT {
     void appliesQuotesToTrackedAssets() {
         stub.quotes.put(
                 "bitcoin",
-                new PriceProvider.PriceQuote("bitcoin", new BigDecimal("64250.12"), new BigDecimal("2.4517")));
+                new PriceProvider.PriceQuote(
+                        "bitcoin", new BigDecimal("64250.12"), new BigDecimal("2.4517")));
 
         job.refresh();
 
@@ -71,11 +72,13 @@ class PriceRefreshJobIT extends AbstractIT {
     void leavesUnquotedAssetsUntouched() {
         assetService.updatePrice("ETH", new BigDecimal("3000.00"));
         stub.quotes.put(
-                "bitcoin", new PriceProvider.PriceQuote("bitcoin", new BigDecimal("64250.12"), null));
+                "bitcoin",
+                new PriceProvider.PriceQuote("bitcoin", new BigDecimal("64250.12"), null));
 
         job.refresh();
 
-        assertThat(assetService.requireBySymbol("ETH").getCurrentPrice()).isEqualByComparingTo("3000.00");
+        assertThat(assetService.requireBySymbol("ETH").getCurrentPrice())
+                .isEqualByComparingTo("3000.00");
     }
 
     @Test
@@ -84,12 +87,14 @@ class PriceRefreshJobIT extends AbstractIT {
 
         assertThatCode(() -> job.refresh()).doesNotThrowAnyException();
 
-        assertThat(assetService.requireBySymbol("BTC").getCurrentPrice()).isEqualByComparingTo("1234.56");
+        assertThat(assetService.requireBySymbol("BTC").getCurrentPrice())
+                .isEqualByComparingTo("1234.56");
     }
 
     @Test
     void aNullDailyChangeIsAccepted() {
-        stub.quotes.put("bitcoin", new PriceProvider.PriceQuote("bitcoin", new BigDecimal("50000"), null));
+        stub.quotes.put(
+                "bitcoin", new PriceProvider.PriceQuote("bitcoin", new BigDecimal("50000"), null));
 
         job.refresh();
 

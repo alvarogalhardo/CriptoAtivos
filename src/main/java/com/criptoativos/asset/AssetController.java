@@ -31,7 +31,8 @@ public class AssetController {
 
     @GetMapping
     public Page<AssetResponse> list(
-            @PageableDefault(size = 20, sort = "symbol", direction = Sort.Direction.ASC) Pageable pageable) {
+            @PageableDefault(size = 20, sort = "symbol", direction = Sort.Direction.ASC)
+                    Pageable pageable) {
         return assetService.list(pageable).map(AssetResponse::from);
     }
 

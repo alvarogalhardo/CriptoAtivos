@@ -19,7 +19,8 @@ public class TotpService {
     private static final int DRIFT_STEPS = 1; // tolerate +/- one 30s step of clock skew
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    private final TimeBasedOneTimePasswordGenerator generator = new TimeBasedOneTimePasswordGenerator();
+    private final TimeBasedOneTimePasswordGenerator generator =
+            new TimeBasedOneTimePasswordGenerator();
     private final String issuer;
 
     public TotpService(@Value("${app.security.twofactor.issuer}") String issuer) {

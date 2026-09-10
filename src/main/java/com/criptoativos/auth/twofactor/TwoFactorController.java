@@ -53,8 +53,8 @@ public class TwoFactorController {
     }
 
     /**
-     * Exchanges a challenge token plus a valid code for a real access token. Reachable only with the
-     * {@code 2FA_CHALLENGE} authority.
+     * Exchanges a challenge token plus a valid code for a real access token. Reachable only with
+     * the {@code 2FA_CHALLENGE} authority.
      */
     @PostMapping("/verify")
     public LoginResponse verify(@Valid @RequestBody VerifyRequest request) {
@@ -63,6 +63,7 @@ public class TwoFactorController {
             throw new BadCredentialsException("Invalid verification code.");
         }
         User user = userService.requireById(userId);
-        return LoginResponse.accessGranted(tokenService.generateToken(user), tokenService.ttlSeconds());
+        return LoginResponse.accessGranted(
+                tokenService.generateToken(user), tokenService.ttlSeconds());
     }
 }

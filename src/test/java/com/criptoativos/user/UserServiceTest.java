@@ -55,7 +55,10 @@ class UserServiceTest {
         User created =
                 userService.register(
                         new RegisterRequest(
-                                "  Ana Maria  ", "Ana@Example.COM", "s3cret-passw0rd", "529.982.247-25"));
+                                "  Ana Maria  ",
+                                "Ana@Example.COM",
+                                "s3cret-passw0rd",
+                                "529.982.247-25"));
 
         assertThat(created.getCpf()).isEqualTo("52998224725");
         assertThat(created.getEmail()).isEqualTo("ana@example.com");

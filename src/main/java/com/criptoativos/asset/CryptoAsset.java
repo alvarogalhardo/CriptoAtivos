@@ -37,7 +37,8 @@ public class CryptoAsset extends Asset {
     @Override
     public void updatePrice(BigDecimal newPrice, BigDecimal dailyChangePct) {
         setCurrentPrice(newPrice);
-        this.dailyChangePct = dailyChangePct == null ? null : dailyChangePct.setScale(4, Money.ROUNDING);
+        this.dailyChangePct =
+                dailyChangePct == null ? null : dailyChangePct.setScale(4, Money.ROUNDING);
         this.priceUpdatedAt = Instant.now();
     }
 

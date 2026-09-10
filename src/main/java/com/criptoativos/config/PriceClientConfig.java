@@ -11,8 +11,8 @@ import org.springframework.web.client.RestClient;
 public class PriceClientConfig {
 
     /**
-     * Explicit timeouts matter here: without them a hung market-data call would tie up the scheduler
-     * thread indefinitely.
+     * Explicit timeouts matter here: without them a hung market-data call would tie up the
+     * scheduler thread indefinitely.
      */
     @Bean
     RestClient coinGeckoRestClient(

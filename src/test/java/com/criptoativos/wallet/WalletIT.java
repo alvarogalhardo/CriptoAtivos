@@ -51,7 +51,9 @@ class WalletIT extends AbstractIT {
 
     @Test
     void depositIncreasesTheBalance() throws Exception {
-        cash("deposits", "1000.00").andExpect(status().isOk()).andExpect(jsonPath("$.cashBalance").value(1000.00));
+        cash("deposits", "1000.00")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cashBalance").value(1000.00));
 
         mockMvc.perform(get("/api/v1/wallet").header(HttpHeaders.AUTHORIZATION, bearer))
                 .andExpect(jsonPath("$.cashBalance").value(1000.00));
@@ -67,7 +69,9 @@ class WalletIT extends AbstractIT {
     void withdrawalReducesTheBalance() throws Exception {
         cash("deposits", "1000.00");
 
-        cash("withdrawals", "250.25").andExpect(status().isOk()).andExpect(jsonPath("$.cashBalance").value(749.75));
+        cash("withdrawals", "250.25")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cashBalance").value(749.75));
     }
 
     @Test
@@ -77,7 +81,9 @@ class WalletIT extends AbstractIT {
         cash("withdrawals", "100.01")
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.title").value("Business rule violated"))
-                .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.containsString("Insufficient funds")));
+                .andExpect(
+                        jsonPath("$.detail")
+                                .value(org.hamcrest.Matchers.containsString("Insufficient funds")));
 
         mockMvc.perform(get("/api/v1/wallet").header(HttpHeaders.AUTHORIZATION, bearer))
                 .andExpect(jsonPath("$.cashBalance").value(100.00));

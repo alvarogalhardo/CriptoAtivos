@@ -18,8 +18,8 @@ public final class AdminDtos {
     /**
      * An administrative view of an account.
      *
-     * <p>The CPF is masked: an admin list is a common place to leak PII, and the last five digits are
-     * enough to identify a record without exposing the document.
+     * <p>The CPF is masked: an admin list is a common place to leak PII, and the last five digits
+     * are enough to identify a record without exposing the document.
      */
     public record AdminUserResponse(
             UUID id,

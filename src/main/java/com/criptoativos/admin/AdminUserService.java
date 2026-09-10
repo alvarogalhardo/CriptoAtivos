@@ -76,7 +76,8 @@ public class AdminUserService {
         Wallet wallet = target.getWallet();
         boolean holdsValue =
                 wallet != null
-                        && (wallet.getCashBalance().signum() > 0 || !wallet.getHoldings().isEmpty());
+                        && (wallet.getCashBalance().signum() > 0
+                                || !wallet.getHoldings().isEmpty());
         if (holdsValue && !force) {
             throw new BusinessRuleException(
                     "User has a non-zero balance or open holdings. Re-send with force=true to delete anyway.");

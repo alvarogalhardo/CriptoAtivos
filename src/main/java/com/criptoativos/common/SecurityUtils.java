@@ -18,7 +18,8 @@ public final class SecurityUtils {
     public static UUID currentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof Jwt jwt)) {
-            throw new IllegalStateException("No authenticated JWT principal in the security context.");
+            throw new IllegalStateException(
+                    "No authenticated JWT principal in the security context.");
         }
         return UUID.fromString(jwt.getSubject());
     }

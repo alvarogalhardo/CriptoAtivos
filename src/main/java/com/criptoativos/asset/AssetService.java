@@ -33,7 +33,10 @@ public class AssetService {
         return assetRepository
                 .findBySymbolIgnoreCase(symbol)
                 .orElseThrow(
-                        () -> new NotFoundException("Asset %s does not exist.".formatted(symbol.toUpperCase())));
+                        () ->
+                                new NotFoundException(
+                                        "Asset %s does not exist."
+                                                .formatted(symbol.toUpperCase())));
     }
 
     @Transactional

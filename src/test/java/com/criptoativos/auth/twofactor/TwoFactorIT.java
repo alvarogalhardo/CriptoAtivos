@@ -50,7 +50,9 @@ class TwoFactorIT extends AbstractIT {
                                 post("/api/v1/auth/login")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(
-                                                "{\"email\":\"ana2fa@example.com\",\"password\":\"" + PASSWORD + "\"}"))
+                                                "{\"email\":\"ana2fa@example.com\",\"password\":\""
+                                                        + PASSWORD
+                                                        + "\"}"))
                         .andExpect(status().isOk())
                         .andReturn()
                         .getResponse()
@@ -60,9 +62,13 @@ class TwoFactorIT extends AbstractIT {
 
     private String beginSetup() throws Exception {
         String body =
-                mockMvc.perform(post("/api/v1/auth/2fa/setup").header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
+                mockMvc.perform(
+                                post("/api/v1/auth/2fa/setup")
+                                        .header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
                         .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.provisioningUri").value(org.hamcrest.Matchers.startsWith("otpauth://totp/")))
+                        .andExpect(
+                                jsonPath("$.provisioningUri")
+                                        .value(org.hamcrest.Matchers.startsWith("otpauth://totp/")))
                         .andReturn()
                         .getResponse()
                         .getContentAsString();
@@ -76,7 +82,11 @@ class TwoFactorIT extends AbstractIT {
                                 post("/api/v1/auth/2fa/confirm")
                                         .header(HttpHeaders.AUTHORIZATION, bearer(accessToken))
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .content("{\"code\":\"" + TotpServiceTest.codeAt(secret, Instant.now()) + "\"}"))
+                                        .content(
+                                                "{\"code\":\""
+                                                        + TotpServiceTest.codeAt(
+                                                                secret, Instant.now())
+                                                        + "\"}"))
                         .andExpect(status().isOk())
                         .andReturn()
                         .getResponse()
@@ -94,7 +104,9 @@ class TwoFactorIT extends AbstractIT {
     void setupDoesNotEnableTwoFactorOnItsOwn() throws Exception {
         beginSetup();
 
-        mockMvc.perform(get("/api/v1/users/me").header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
+        mockMvc.perform(
+                        get("/api/v1/users/me")
+                                .header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
                 .andExpect(jsonPath("$.twoFactorEnabled").value(false));
         assertThat(login().has("accessToken")).isTrue();
     }
@@ -111,7 +123,9 @@ class TwoFactorIT extends AbstractIT {
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.detail").value("Invalid verification code."));
 
-        mockMvc.perform(get("/api/v1/users/me").header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
+        mockMvc.perform(
+                        get("/api/v1/users/me")
+                                .header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
                 .andExpect(jsonPath("$.twoFactorEnabled").value(false));
     }
 
@@ -120,7 +134,9 @@ class TwoFactorIT extends AbstractIT {
         List<String> codes = enable();
 
         assertThat(codes).hasSize(10).allMatch(code -> code.matches("[A-Z2-9]{5}-[A-Z2-9]{5}"));
-        mockMvc.perform(get("/api/v1/users/me").header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
+        mockMvc.perform(
+                        get("/api/v1/users/me")
+                                .header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
                 .andExpect(jsonPath("$.twoFactorEnabled").value(true));
     }
 
@@ -132,7 +148,9 @@ class TwoFactorIT extends AbstractIT {
 
         assertThat(response.get("twoFactorRequired").asBoolean()).isTrue();
         assertThat(response.has("challengeToken")).isTrue();
-        assertThat(response.has("accessToken")).as("no access token before the second factor").isFalse();
+        assertThat(response.has("accessToken"))
+                .as("no access token before the second factor")
+                .isFalse();
     }
 
     /** The whole point of a separate authority: a challenge must not act as a session. */
@@ -141,7 +159,9 @@ class TwoFactorIT extends AbstractIT {
         enable();
         String challenge = login().get("challengeToken").asText();
 
-        mockMvc.perform(get("/api/v1/users/me").header(HttpHeaders.AUTHORIZATION, bearer(challenge)))
+        mockMvc.perform(
+                        get("/api/v1/users/me")
+                                .header(HttpHeaders.AUTHORIZATION, bearer(challenge)))
                 .andExpect(status().isForbidden());
     }
 
@@ -164,7 +184,10 @@ class TwoFactorIT extends AbstractIT {
                 post("/api/v1/auth/2fa/confirm")
                         .header(HttpHeaders.AUTHORIZATION, bearer(accessToken))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"code\":\"" + TotpServiceTest.codeAt(secret, Instant.now()) + "\"}"));
+                        .content(
+                                "{\"code\":\""
+                                        + TotpServiceTest.codeAt(secret, Instant.now())
+                                        + "\"}"));
 
         String challenge = login().get("challengeToken").asText();
 
@@ -173,7 +196,11 @@ class TwoFactorIT extends AbstractIT {
                                 post("/api/v1/auth/2fa/verify")
                                         .header(HttpHeaders.AUTHORIZATION, bearer(challenge))
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .content("{\"code\":\"" + TotpServiceTest.codeAt(secret, Instant.now()) + "\"}"))
+                                        .content(
+                                                "{\"code\":\""
+                                                        + TotpServiceTest.codeAt(
+                                                                secret, Instant.now())
+                                                        + "\"}"))
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.accessToken").isNotEmpty())
                         .andReturn()
@@ -234,7 +261,10 @@ class TwoFactorIT extends AbstractIT {
                         post("/api/v1/auth/2fa/disable")
                                 .header(HttpHeaders.AUTHORIZATION, bearer(accessToken))
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"code\":\"" + TotpServiceTest.codeAt(secret, Instant.now()) + "\"}"))
+                                .content(
+                                        "{\"code\":\""
+                                                + TotpServiceTest.codeAt(secret, Instant.now())
+                                                + "\"}"))
                 .andExpect(status().isNoContent());
 
         assertThat(login().has("accessToken")).isTrue();
@@ -244,7 +274,9 @@ class TwoFactorIT extends AbstractIT {
     void setupIsRejectedWhenTwoFactorIsAlreadyEnabled() throws Exception {
         enable();
 
-        mockMvc.perform(post("/api/v1/auth/2fa/setup").header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
+        mockMvc.perform(
+                        post("/api/v1/auth/2fa/setup")
+                                .header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
                 .andExpect(status().isConflict());
     }
 

@@ -17,8 +17,8 @@ public interface WalletRepository extends JpaRepository<Wallet, UUID> {
      * Read path for the API.
      *
      * <p>{@code open-in-view} is off, so the Hibernate session closes when the service method
-     * returns. Without this graph, mapping the response DTO in the controller would throw
-     * {@code LazyInitializationException} on {@code wallet.holdings}.
+     * returns. Without this graph, mapping the response DTO in the controller would throw {@code
+     * LazyInitializationException} on {@code wallet.holdings}.
      */
     @EntityGraph(attributePaths = {"holdings", "holdings.asset"})
     @Query("select w from Wallet w where w.user.id = :userId")

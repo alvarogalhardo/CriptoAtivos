@@ -28,7 +28,8 @@ class CoinGeckoPriceProviderTest {
 
     @BeforeEach
     void setUp() {
-        RestClient.Builder builder = RestClient.builder().baseUrl("https://api.coingecko.com/api/v3");
+        RestClient.Builder builder =
+                RestClient.builder().baseUrl("https://api.coingecko.com/api/v3");
         server = MockRestServiceServer.bindTo(builder).build();
         provider = new CoinGeckoPriceProvider(builder.build(), "usd");
     }
@@ -38,7 +39,8 @@ class CoinGeckoPriceProviderTest {
         server.expect(requestTo(Matchers.containsString("ids=bitcoin,ethereum")))
                 .andRespond(withSuccess(BODY, MediaType.APPLICATION_JSON));
 
-        Map<String, PriceProvider.PriceQuote> quotes = provider.fetchQuotes(List.of("bitcoin", "ethereum"));
+        Map<String, PriceProvider.PriceQuote> quotes =
+                provider.fetchQuotes(List.of("bitcoin", "ethereum"));
 
         assertThat(quotes).hasSize(2);
         assertThat(quotes.get("bitcoin").price()).isEqualByComparingTo("64250.12");
@@ -49,9 +51,11 @@ class CoinGeckoPriceProviderTest {
 
     @Test
     void requestsTheConfiguredCurrencyAndDailyChange() {
-        server.expect(requestTo(Matchers.allOf(
-                        Matchers.containsString("vs_currencies=usd"),
-                        Matchers.containsString("include_24hr_change=true"))))
+        server.expect(
+                        requestTo(
+                                Matchers.allOf(
+                                        Matchers.containsString("vs_currencies=usd"),
+                                        Matchers.containsString("include_24hr_change=true"))))
                 .andRespond(withSuccess(BODY, MediaType.APPLICATION_JSON));
 
         provider.fetchQuotes(List.of("bitcoin", "ethereum"));
@@ -80,9 +84,11 @@ class CoinGeckoPriceProviderTest {
         server.expect(requestTo(Matchers.any(String.class)))
                 .andRespond(
                         withSuccess(
-                                "{\"bitcoin\":{\"usd\":100.0},\"dogecoin\":{}}", MediaType.APPLICATION_JSON));
+                                "{\"bitcoin\":{\"usd\":100.0},\"dogecoin\":{}}",
+                                MediaType.APPLICATION_JSON));
 
-        Map<String, PriceProvider.PriceQuote> quotes = provider.fetchQuotes(List.of("bitcoin", "dogecoin"));
+        Map<String, PriceProvider.PriceQuote> quotes =
+                provider.fetchQuotes(List.of("bitcoin", "dogecoin"));
 
         assertThat(quotes).containsOnlyKeys("bitcoin");
     }

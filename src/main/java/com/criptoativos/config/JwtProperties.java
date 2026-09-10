@@ -12,4 +12,8 @@ import org.springframework.core.io.Resource;
  */
 @ConfigurationProperties("app.security.jwt")
 public record JwtProperties(
-        Resource publicKey, Resource privateKey, String issuer, Duration ttl, Duration challengeTtl) {}
+        Resource publicKey,
+        Resource privateKey,
+        String issuer,
+        Duration ttl,
+        Duration challengeTtl) {}

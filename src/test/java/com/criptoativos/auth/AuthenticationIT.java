@@ -44,7 +44,9 @@ class AuthenticationIT extends AbstractIT {
                                 post("/api/v1/auth/login")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(
-                                                "{\"email\":\"ana@example.com\",\"password\":\"" + password + "\"}"))
+                                                "{\"email\":\"ana@example.com\",\"password\":\""
+                                                        + password
+                                                        + "\"}"))
                         .andExpect(status().isOk())
                         .andReturn()
                         .getResponse()
@@ -58,7 +60,9 @@ class AuthenticationIT extends AbstractIT {
 
         assertThat(token).isNotBlank().contains(".");
 
-        mockMvc.perform(get("/api/v1/users/me").header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+        mockMvc.perform(
+                        get("/api/v1/users/me")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("ana@example.com"))
                 .andExpect(jsonPath("$.role").value("USER"));
@@ -69,7 +73,10 @@ class AuthenticationIT extends AbstractIT {
         mockMvc.perform(
                         post("/api/v1/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"email\":\"ana@example.com\",\"password\":\"" + PASSWORD + "\"}"))
+                                .content(
+                                        "{\"email\":\"ana@example.com\",\"password\":\""
+                                                + PASSWORD
+                                                + "\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tokenType").value("Bearer"))
                 .andExpect(jsonPath("$.expiresIn").value(7200));
@@ -80,7 +87,8 @@ class AuthenticationIT extends AbstractIT {
         mockMvc.perform(
                         post("/api/v1/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"email\":\"ana@example.com\",\"password\":\"wrong-password-x\"}"))
+                                .content(
+                                        "{\"email\":\"ana@example.com\",\"password\":\"wrong-password-x\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.detail").value("Invalid email or password."));
     }
@@ -91,7 +99,10 @@ class AuthenticationIT extends AbstractIT {
         mockMvc.perform(
                         post("/api/v1/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"email\":\"nobody@example.com\",\"password\":\"" + PASSWORD + "\"}"))
+                                .content(
+                                        "{\"email\":\"nobody@example.com\",\"password\":\""
+                                                + PASSWORD
+                                                + "\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.detail").value("Invalid email or password."));
     }
@@ -103,7 +114,9 @@ class AuthenticationIT extends AbstractIT {
 
     @Test
     void protectedEndpointsRejectAGarbageToken() throws Exception {
-        mockMvc.perform(get("/api/v1/users/me").header(HttpHeaders.AUTHORIZATION, "Bearer not.a.jwt"))
+        mockMvc.perform(
+                        get("/api/v1/users/me")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer not.a.jwt"))
                 .andExpect(status().isUnauthorized());
     }
 

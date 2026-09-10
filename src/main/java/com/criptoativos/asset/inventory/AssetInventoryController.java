@@ -30,6 +30,7 @@ public class AssetInventoryController {
     @PreAuthorize("hasRole('ADMIN')")
     public InventoryResponse restock(
             @PathVariable String symbol, @Valid @RequestBody RestockRequest request) {
-        return InventoryResponse.from(inventoryService.restock(symbol, request.availableQuantity()));
+        return InventoryResponse.from(
+                inventoryService.restock(symbol, request.availableQuantity()));
     }
 }

@@ -35,8 +35,15 @@ public class OpenApiConfig {
                                         Most endpoints require a bearer token. Register, log in, then use \
                                         the Authorize button above.\
                                         """)
-                                .contact(new Contact().name("CriptoAtivos").url("https://github.com/alvarogalhardo/CriptoAtivos"))
-                                .license(new License().name("MIT").url("https://opensource.org/licenses/MIT")))
+                                .contact(
+                                        new Contact()
+                                                .name("CriptoAtivos")
+                                                .url(
+                                                        "https://github.com/alvarogalhardo/CriptoAtivos"))
+                                .license(
+                                        new License()
+                                                .name("MIT")
+                                                .url("https://opensource.org/licenses/MIT")))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
     }
 }

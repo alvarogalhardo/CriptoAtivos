@@ -28,9 +28,13 @@ public class PortfolioService {
                         .toList();
 
         BigDecimal invested =
-                holdings.stream().map(HoldingResponse::investedValue).reduce(Money.ZERO_CASH, BigDecimal::add);
+                holdings.stream()
+                        .map(HoldingResponse::investedValue)
+                        .reduce(Money.ZERO_CASH, BigDecimal::add);
         BigDecimal market =
-                holdings.stream().map(HoldingResponse::marketValue).reduce(Money.ZERO_CASH, BigDecimal::add);
+                holdings.stream()
+                        .map(HoldingResponse::marketValue)
+                        .reduce(Money.ZERO_CASH, BigDecimal::add);
         BigDecimal pnl = Money.cash(market.subtract(invested));
 
         return new WalletResponse(

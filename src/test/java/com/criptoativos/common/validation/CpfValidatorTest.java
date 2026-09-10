@@ -42,7 +42,9 @@ class CpfValidatorTest {
     void everyGeneratedTestCpfIsValid() {
         for (int i = 0; i < 500; i++) {
             String cpf = com.criptoativos.support.TestFixtures.generateCpf(i);
-            assertThat(validator.isValid(cpf, null)).as("generated CPF %s at index %d", cpf, i).isTrue();
+            assertThat(validator.isValid(cpf, null))
+                    .as("generated CPF %s at index %d", cpf, i)
+                    .isTrue();
         }
     }
 }

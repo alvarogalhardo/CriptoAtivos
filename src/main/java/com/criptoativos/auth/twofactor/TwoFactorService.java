@@ -27,6 +27,7 @@ public class TwoFactorService {
     private static final int CODE_GROUPS = 2;
     private static final int GROUP_LENGTH = 5;
     private static final SecureRandom RANDOM = new SecureRandom();
+
     /** Excludes I, O, 0 and 1 so codes can be transcribed without ambiguity. */
     private static final String ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -94,7 +95,8 @@ public class TwoFactorService {
         if (user.getTwoFactorSecret() != null && totpService.verify(decryptSecret(user), code)) {
             return true;
         }
-        for (RecoveryCode candidate : recoveryCodeRepository.findByUserIdAndUsedAtIsNull(user.getId())) {
+        for (RecoveryCode candidate :
+                recoveryCodeRepository.findByUserIdAndUsedAtIsNull(user.getId())) {
             if (passwordEncoder.matches(code, candidate.getCodeHash())) {
                 candidate.markUsed();
                 log.info("Recovery code consumed for user={}", user.getId());
@@ -127,7 +129,8 @@ public class TwoFactorService {
     private User requireUser(UUID userId) {
         return userRepository
                 .findById(userId)
-                .orElseThrow(() -> new NotFoundException("User %s does not exist.".formatted(userId)));
+                .orElseThrow(
+                        () -> new NotFoundException("User %s does not exist.".formatted(userId)));
     }
 
     private static String randomCode() {

@@ -79,7 +79,8 @@ public class Wallet {
         BigDecimal rounded = Money.cash(amount);
         if (this.cashBalance.compareTo(rounded) < 0) {
             throw new BusinessRuleException(
-                    "Insufficient funds: balance is %s, required %s.".formatted(this.cashBalance, rounded));
+                    "Insufficient funds: balance is %s, required %s."
+                            .formatted(this.cashBalance, rounded));
         }
         this.cashBalance = Money.cash(this.cashBalance.subtract(rounded));
     }

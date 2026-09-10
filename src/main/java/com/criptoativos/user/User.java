@@ -75,7 +75,8 @@ public class User {
      * Creates a user together with the empty wallet every account must have. The original design
      * left this coupling implicit, so a user could exist with no wallet at all.
      */
-    public static User create(String name, String email, String passwordHash, String cpf, Role role) {
+    public static User create(
+            String name, String email, String passwordHash, String cpf, Role role) {
         User user = new User(name, email, passwordHash, cpf, role);
         user.wallet = Wallet.forUser(user);
         return user;

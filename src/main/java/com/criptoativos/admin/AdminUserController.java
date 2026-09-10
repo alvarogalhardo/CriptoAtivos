@@ -48,8 +48,7 @@ public class AdminUserController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(
-            @PathVariable UUID id, @RequestParam(defaultValue = "false") boolean force) {
+    public void delete(@PathVariable UUID id, @RequestParam(defaultValue = "false") boolean force) {
         adminUserService.delete(SecurityUtils.currentUserId(), id, force);
     }
 

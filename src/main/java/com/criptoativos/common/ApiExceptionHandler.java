@@ -39,7 +39,8 @@ public class ApiExceptionHandler {
             errors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
         ProblemDetail problem =
-                ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Request validation failed.");
+                ProblemDetail.forStatusAndDetail(
+                        HttpStatus.BAD_REQUEST, "Request validation failed.");
         problem.setTitle("Invalid request");
         problem.setType(URI.create(TYPE_PREFIX + "ValidationFailed"));
         problem.setProperty("errors", errors);
@@ -47,7 +48,10 @@ public class ApiExceptionHandler {
     }
 
     /** Malformed JSON, or a value the parser cannot coerce into the target type. */
-    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
+    @ExceptionHandler({
+        HttpMessageNotReadableException.class,
+        MethodArgumentTypeMismatchException.class
+    })
     ProblemDetail handleUnreadable(Exception ex) {
         ProblemDetail problem =
                 ProblemDetail.forStatusAndDetail(
@@ -59,7 +63,8 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     ProblemDetail handleBadCredentials(BadCredentialsException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        ProblemDetail problem =
+                ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
         problem.setTitle("Authentication failed");
         problem.setType(URI.create(TYPE_PREFIX + "AuthenticationFailed"));
         return problem;

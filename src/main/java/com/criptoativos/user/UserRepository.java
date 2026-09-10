@@ -39,8 +39,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     /**
      * Admin listing. The wallet is a to-one association, so fetching it in the graph is safe with
-     * pagination; fetching the holdings collection here would force Hibernate to paginate in memory.
-     * Holding counts come from {@code countHoldingsByUserIds} in one extra query instead.
+     * pagination; fetching the holdings collection here would force Hibernate to paginate in
+     * memory. Holding counts come from {@code countHoldingsByUserIds} in one extra query instead.
      */
     @EntityGraph(attributePaths = "wallet")
     @Query("select u from User u")

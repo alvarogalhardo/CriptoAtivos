@@ -59,6 +59,7 @@ public class UserService {
     public User requireByEmail(String email) {
         return userRepository
                 .findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new NotFoundException("User %s does not exist.".formatted(email)));
+                .orElseThrow(
+                        () -> new NotFoundException("User %s does not exist.".formatted(email)));
     }
 }

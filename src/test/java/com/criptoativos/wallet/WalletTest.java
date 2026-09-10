@@ -59,10 +59,12 @@ class WalletTest {
     void creditAndDebitRejectNonPositiveAmounts() {
         Wallet wallet = emptyWallet();
 
-        assertThatThrownBy(() -> wallet.credit(BigDecimal.ZERO)).isInstanceOf(BusinessRuleException.class);
+        assertThatThrownBy(() -> wallet.credit(BigDecimal.ZERO))
+                .isInstanceOf(BusinessRuleException.class);
         assertThatThrownBy(() -> wallet.credit(new BigDecimal("-1")))
                 .isInstanceOf(BusinessRuleException.class);
-        assertThatThrownBy(() -> wallet.debit(BigDecimal.ZERO)).isInstanceOf(BusinessRuleException.class);
+        assertThatThrownBy(() -> wallet.debit(BigDecimal.ZERO))
+                .isInstanceOf(BusinessRuleException.class);
     }
 
     @Test
@@ -87,10 +89,14 @@ class WalletTest {
         wallet.addHolding(btc, new BigDecimal("1"), new BigDecimal("200"));
 
         // (3*100 + 1*200) / 4 = 125
-        assertThat(wallet.findHolding(btc).orElseThrow().getAverageCost()).isEqualByComparingTo("125");
+        assertThat(wallet.findHolding(btc).orElseThrow().getAverageCost())
+                .isEqualByComparingTo("125");
     }
 
-    /** The original HashMap<CriptoAtivo, Double> had no equals/hashCode, so this produced two entries. */
+    /**
+     * The original HashMap<CriptoAtivo, Double> had no equals/hashCode, so this produced two
+     * entries.
+     */
     @Test
     void buyingTheSameAssetTwiceDoesNotDuplicateTheHolding() {
         Wallet wallet = emptyWallet();
@@ -133,7 +139,9 @@ class WalletTest {
 
         Holding holding = wallet.findHolding(btc).orElseThrow();
         assertThat(holding.getQuantity()).isEqualByComparingTo("1.5");
-        assertThat(holding.getAverageCost()).as("selling does not change cost basis").isEqualByComparingTo("100");
+        assertThat(holding.getAverageCost())
+                .as("selling does not change cost basis")
+                .isEqualByComparingTo("100");
     }
 
     @Test

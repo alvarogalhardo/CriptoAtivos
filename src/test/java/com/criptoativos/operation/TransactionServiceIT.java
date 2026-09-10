@@ -92,7 +92,8 @@ class TransactionServiceIT extends AbstractIT {
 
         transactionService.sell(userId, "BTC", new BigDecimal("0.5"));
 
-        assertThat(wallet().getHoldings().iterator().next().getQuantity()).isEqualByComparingTo("1.5");
+        assertThat(wallet().getHoldings().iterator().next().getQuantity())
+                .isEqualByComparingTo("1.5");
     }
 
     @Test
@@ -139,7 +140,8 @@ class TransactionServiceIT extends AbstractIT {
         assetService.updatePrice("BTC", new BigDecimal("1500.00"));
         transactionService.sell(userId, "BTC", new BigDecimal("1"));
 
-        var history = transactionService.history(userId, null, null, null, null, Pageable.unpaged());
+        var history =
+                transactionService.history(userId, null, null, null, null, Pageable.unpaged());
 
         assertThat(history).hasSize(2);
         assertThat(history)

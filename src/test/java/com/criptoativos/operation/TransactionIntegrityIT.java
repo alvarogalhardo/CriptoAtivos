@@ -119,7 +119,8 @@ class TransactionIntegrityIT extends AbstractIT {
                                         transactionService.buy(userId, "BTC", BigDecimal.ONE);
                                         succeeded.incrementAndGet();
                                     } catch (BusinessRuleException expected) {
-                                        rejected.incrementAndGet(); // losing threads are supposed to lose
+                                        rejected.incrementAndGet(); // losing threads are supposed
+                                        // to lose
                                     }
                                     return null;
                                 }));

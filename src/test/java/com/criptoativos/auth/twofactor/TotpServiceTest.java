@@ -39,14 +39,16 @@ class TotpServiceTest {
     void acceptsACodeOneStepOldToToleratePhoneClockDrift() throws Exception {
         String secret = totpService.generateSecret();
 
-        assertThat(totpService.verify(secret, codeAt(secret, Instant.now().minusSeconds(30)))).isTrue();
+        assertThat(totpService.verify(secret, codeAt(secret, Instant.now().minusSeconds(30))))
+                .isTrue();
     }
 
     @Test
     void rejectsACodeThatIsTooOld() throws Exception {
         String secret = totpService.generateSecret();
 
-        assertThat(totpService.verify(secret, codeAt(secret, Instant.now().minusSeconds(300)))).isFalse();
+        assertThat(totpService.verify(secret, codeAt(secret, Instant.now().minusSeconds(300))))
+                .isFalse();
     }
 
     @Test

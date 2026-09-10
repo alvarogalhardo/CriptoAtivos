@@ -63,7 +63,8 @@ class AdminUserIT extends AbstractIT {
     @Test
     void listingUsersRequiresAdmin() throws Exception {
         mockMvc.perform(
-                        get("/api/v1/admin/users").header(HttpHeaders.AUTHORIZATION, fixtures.userBearer()))
+                        get("/api/v1/admin/users")
+                                .header(HttpHeaders.AUTHORIZATION, fixtures.userBearer()))
                 .andExpect(status().isForbidden());
     }
 
@@ -162,7 +163,8 @@ class AdminUserIT extends AbstractIT {
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(
-                        get("/api/v1/admin/users/" + target).header(HttpHeaders.AUTHORIZATION, adminBearer))
+                        get("/api/v1/admin/users/" + target)
+                                .header(HttpHeaders.AUTHORIZATION, adminBearer))
                 .andExpect(status().isNotFound());
 
         Integer wallets =

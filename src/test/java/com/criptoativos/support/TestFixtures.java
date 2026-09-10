@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Builds the users and tokens integration tests need.
  *
- * <p>Exposed as a bean (see {@link ContainersConfig}) rather than statics so it participates in each
- * test's transaction and rolls back with it.
+ * <p>Exposed as a bean (see {@link ContainersConfig}) rather than statics so it participates in
+ * each test's transaction and rolls back with it.
  */
 public class TestFixtures {
 
@@ -34,7 +34,8 @@ public class TestFixtures {
         return userService.register(
                 new RegisterRequest(
                         "Test User " + index,
-                        "user%d-%s@example.com".formatted(index, UUID.randomUUID().toString().substring(0, 8)),
+                        "user%d-%s@example.com"
+                                .formatted(index, UUID.randomUUID().toString().substring(0, 8)),
                         "s3cret-passw0rd",
                         generateCpf(index)));
     }

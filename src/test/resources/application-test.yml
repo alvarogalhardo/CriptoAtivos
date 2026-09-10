@@ -7,6 +7,11 @@ spring:
     clean-disabled: false
 
 app:
+  security:
+    rate-limit:
+      # Every MockMvc request shares 127.0.0.1, so a shared counter would make the
+      # suite trip its own limit. RateLimitIT enables it deliberately instead.
+      enabled: false
   prices:
     # The suite never touches the network: prices are whatever a test sets.
     provider: manual

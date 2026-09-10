@@ -38,7 +38,8 @@ class AdminSeederIT extends AbstractIT {
 
         assertThat(admin.getRole()).isEqualTo(Role.ADMIN);
         assertThat(admin.getPasswordHash()).startsWith("$2").isNotEqualTo("a-real-seeded-password");
-        assertThat(passwordEncoder.matches("a-real-seeded-password", admin.getPasswordHash())).isTrue();
+        assertThat(passwordEncoder.matches("a-real-seeded-password", admin.getPasswordHash()))
+                .isTrue();
     }
 
     @Test

@@ -49,8 +49,10 @@ public class TransactionController {
     public Page<TransactionResponse> history(
             @RequestParam(required = false) TransactionType type,
             @RequestParam(required = false) String symbol,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    Instant from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    Instant to,
             @PageableDefault(size = 20, sort = "occurredAt", direction = Sort.Direction.DESC)
                     Pageable pageable) {
         return transactionService

@@ -15,13 +15,16 @@ import org.springframework.web.client.RestClientException;
 
 /** Reads spot prices from CoinGecko's free public API. */
 @Component
-@ConditionalOnProperty(name = "app.prices.provider", havingValue = "coingecko", matchIfMissing = true)
+@ConditionalOnProperty(
+        name = "app.prices.provider",
+        havingValue = "coingecko",
+        matchIfMissing = true)
 public class CoinGeckoPriceProvider implements PriceProvider {
 
     private static final Logger log = LoggerFactory.getLogger(CoinGeckoPriceProvider.class);
 
-    private static final ParameterizedTypeReference<Map<String, Map<String, BigDecimal>>> RESPONSE_TYPE =
-            new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<Map<String, Map<String, BigDecimal>>>
+            RESPONSE_TYPE = new ParameterizedTypeReference<>() {};
 
     private final RestClient restClient;
     private final String vsCurrency;
@@ -69,7 +72,8 @@ public class CoinGeckoPriceProvider implements PriceProvider {
             return quotes;
         } catch (RestClientException ex) {
             // Degrade to stale prices; the scheduled job will try again.
-            log.warn("CoinGecko price lookup failed ({}); keeping existing prices", ex.getMessage());
+            log.warn(
+                    "CoinGecko price lookup failed ({}); keeping existing prices", ex.getMessage());
             return Map.of();
         }
     }

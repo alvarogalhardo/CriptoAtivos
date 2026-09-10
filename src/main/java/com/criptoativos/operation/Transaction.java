@@ -59,7 +59,11 @@ public class Transaction extends Operation {
         transaction.initialise(
                 user,
                 "%s %s %s @ %s"
-                        .formatted(type, transaction.quantity, asset.getSymbol(), transaction.unitPrice));
+                        .formatted(
+                                type,
+                                transaction.quantity,
+                                asset.getSymbol(),
+                                transaction.unitPrice));
         return transaction;
     }
 

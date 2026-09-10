@@ -50,10 +50,13 @@ public class AssetInventoryService {
     }
 
     private AssetInventory lockedFor(Asset asset) {
-        return inventoryRepository.findByAssetIdForUpdate(asset.getId()).orElseThrow(() -> missing(asset));
+        return inventoryRepository
+                .findByAssetIdForUpdate(asset.getId())
+                .orElseThrow(() -> missing(asset));
     }
 
     private static NotFoundException missing(Asset asset) {
-        return new NotFoundException("No inventory record for asset %s.".formatted(asset.getSymbol()));
+        return new NotFoundException(
+                "No inventory record for asset %s.".formatted(asset.getSymbol()));
     }
 }

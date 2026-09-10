@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     /**
-     * A well-formed BCrypt hash of a value nobody can supply. Verifying against it when the email is
-     * unknown keeps the response time comparable to a real password check, so an attacker cannot
+     * A well-formed BCrypt hash of a value nobody can supply. Verifying against it when the email
+     * is unknown keeps the response time comparable to a real password check, so an attacker cannot
      * enumerate accounts by timing.
      */
     private static final String DUMMY_HASH =
@@ -28,7 +28,9 @@ public class AuthService {
     private final TokenService tokenService;
 
     public AuthService(
-            UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService) {
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            TokenService tokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
@@ -48,6 +50,7 @@ public class AuthService {
         User user = candidate.get();
         return user.isTwoFactorEnabled()
                 ? LoginResponse.challenge(tokenService.generateChallengeToken(user))
-                : LoginResponse.accessGranted(tokenService.generateToken(user), tokenService.ttlSeconds());
+                : LoginResponse.accessGranted(
+                        tokenService.generateToken(user), tokenService.ttlSeconds());
     }
 }

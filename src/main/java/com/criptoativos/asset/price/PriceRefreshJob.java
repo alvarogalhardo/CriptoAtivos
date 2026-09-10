@@ -32,7 +32,8 @@ public class PriceRefreshJob {
             return;
         }
         Map<String, PriceProvider.PriceQuote> quotes =
-                priceProvider.fetchQuotes(tracked.stream().map(CryptoAsset::getExternalId).toList());
+                priceProvider.fetchQuotes(
+                        tracked.stream().map(CryptoAsset::getExternalId).toList());
 
         int updated = 0;
         for (CryptoAsset asset : tracked) {

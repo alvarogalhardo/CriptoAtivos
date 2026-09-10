@@ -25,7 +25,10 @@ class RegistrationIT extends AbstractIT {
 
     @Test
     void registersAUserAndReturns201WithoutLeakingCredentials() throws Exception {
-        mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON).content(VALID))
+        mockMvc.perform(
+                        post("/api/v1/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(VALID))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.name").value("Ana Maria"))
@@ -41,7 +44,10 @@ class RegistrationIT extends AbstractIT {
     void rejectsAnInvalidCpfWithAProblemDetail() throws Exception {
         String body = VALID.replace("529.982.247-25", "111.111.111-11");
 
-        mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON).content(body))
+        mockMvc.perform(
+                        post("/api/v1/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(body))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Invalid request"))
                 .andExpect(jsonPath("$.errors.cpf").value("must be a valid CPF"));
@@ -51,19 +57,28 @@ class RegistrationIT extends AbstractIT {
     void rejectsAShortPassword() throws Exception {
         String body = VALID.replace("s3cret-passw0rd", "short");
 
-        mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON).content(body))
+        mockMvc.perform(
+                        post("/api/v1/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(body))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors.password").isNotEmpty());
     }
 
     @Test
     void rejectsADuplicateEmailWith409() throws Exception {
-        mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON).content(VALID))
+        mockMvc.perform(
+                        post("/api/v1/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(VALID))
                 .andExpect(status().isCreated());
 
         String body = VALID.replace("529.982.247-25", "168.995.350-09");
 
-        mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON).content(body))
+        mockMvc.perform(
+                        post("/api/v1/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(body))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.title").value("Conflict"))
                 .andExpect(jsonPath("$.detail").value("Email is already registered."));
@@ -71,12 +86,18 @@ class RegistrationIT extends AbstractIT {
 
     @Test
     void rejectsADuplicateCpfWith409() throws Exception {
-        mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON).content(VALID))
+        mockMvc.perform(
+                        post("/api/v1/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(VALID))
                 .andExpect(status().isCreated());
 
         String body = VALID.replace("ana@example.com", "outra@example.com");
 
-        mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON).content(body))
+        mockMvc.perform(
+                        post("/api/v1/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(body))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail").value("CPF is already registered."));
     }

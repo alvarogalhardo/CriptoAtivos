@@ -18,7 +18,8 @@ public class CpfValidator implements ConstraintValidator<Cpf, String> {
         if (digits.chars().distinct().count() == 1) {
             return false;
         }
-        return checkDigit(digits, 9) == digits.charAt(9) && checkDigit(digits, 10) == digits.charAt(10);
+        return checkDigit(digits, 9) == digits.charAt(9)
+                && checkDigit(digits, 10) == digits.charAt(10);
     }
 
     /** Computes the CPF check digit at {@code position} using the standard modulus-11 weighting. */

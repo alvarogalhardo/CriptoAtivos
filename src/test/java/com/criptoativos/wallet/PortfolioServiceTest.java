@@ -14,7 +14,8 @@ class PortfolioServiceTest {
     private final PortfolioService portfolioService = new PortfolioService();
 
     private static Asset assetAt(String symbol, String name, String price) {
-        Asset asset = CryptoAsset.create(symbol, name, null, new BigDecimal(price), symbol.toLowerCase());
+        Asset asset =
+                CryptoAsset.create(symbol, name, null, new BigDecimal(price), symbol.toLowerCase());
         return asset;
     }
 
@@ -72,7 +73,8 @@ class PortfolioServiceTest {
     void totalValueIsCashPlusMarketValue() {
         Wallet wallet = Wallet.forUser(null);
         wallet.credit(new BigDecimal("1000.00"));
-        wallet.addHolding(assetAt("BTC", "Bitcoin", "150"), new BigDecimal("2"), new BigDecimal("100"));
+        wallet.addHolding(
+                assetAt("BTC", "Bitcoin", "150"), new BigDecimal("2"), new BigDecimal("100"));
 
         assertThat(portfolioService.summarise(wallet).totalValue()).isEqualByComparingTo("1300.00");
     }
@@ -80,12 +82,16 @@ class PortfolioServiceTest {
     @Test
     void eachHoldingIsValuedIndependently() {
         Wallet wallet = Wallet.forUser(null);
-        wallet.addHolding(assetAt("BTC", "Bitcoin", "150"), new BigDecimal("2"), new BigDecimal("100"));
-        wallet.addHolding(assetAt("ETH", "Ethereum", "40"), new BigDecimal("10"), new BigDecimal("50"));
+        wallet.addHolding(
+                assetAt("BTC", "Bitcoin", "150"), new BigDecimal("2"), new BigDecimal("100"));
+        wallet.addHolding(
+                assetAt("ETH", "Ethereum", "40"), new BigDecimal("10"), new BigDecimal("50"));
 
         WalletResponse response = portfolioService.summarise(wallet);
 
-        assertThat(response.holdings()).extracting(HoldingResponse::symbol).containsExactly("BTC", "ETH");
+        assertThat(response.holdings())
+                .extracting(HoldingResponse::symbol)
+                .containsExactly("BTC", "ETH");
 
         HoldingResponse btc = response.holdings().get(0);
         assertThat(btc.marketValue()).isEqualByComparingTo("300.00");
@@ -116,7 +122,9 @@ class PortfolioServiceTest {
     void fractionalQuantitiesAreValuedAtCashScale() {
         Wallet wallet = Wallet.forUser(null);
         wallet.addHolding(
-                assetAt("BTC", "Bitcoin", "64250.12"), new BigDecimal("0.00123456"), new BigDecimal("60000"));
+                assetAt("BTC", "Bitcoin", "64250.12"),
+                new BigDecimal("0.00123456"),
+                new BigDecimal("60000"));
 
         HoldingResponse holding = portfolioService.summarise(wallet).holdings().get(0);
 

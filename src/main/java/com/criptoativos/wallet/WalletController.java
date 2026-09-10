@@ -28,7 +28,8 @@ public class WalletController {
 
     @GetMapping
     public WalletResponse myWallet() {
-        return portfolioService.summarise(walletService.requireByUserId(SecurityUtils.currentUserId()));
+        return portfolioService.summarise(
+                walletService.requireByUserId(SecurityUtils.currentUserId()));
     }
 
     @PostMapping("/deposits")

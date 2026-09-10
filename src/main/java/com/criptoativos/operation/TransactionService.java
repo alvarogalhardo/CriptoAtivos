@@ -26,8 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
  * console app added the asset to its list <em>before</em> checking the balance and printed success
  * unconditionally, so a failed purchase still looked like it worked.
  *
- * <p><strong>Lock order is always wallet, then inventory.</strong> This is the only class that holds
- * both; reversing the order anywhere would let two concurrent trades on opposite assets deadlock.
+ * <p><strong>Lock order is always wallet, then inventory.</strong> This is the only class that
+ * holds both; reversing the order anywhere would let two concurrent trades on opposite assets
+ * deadlock.
  */
 @Service
 public class TransactionService {
@@ -66,7 +67,12 @@ public class TransactionService {
         Transaction saved =
                 transactionRepository.save(
                         Transaction.of(
-                                wallet.getUser(), asset, TransactionType.BUY, quantity, unitPrice, total));
+                                wallet.getUser(),
+                                asset,
+                                TransactionType.BUY,
+                                quantity,
+                                unitPrice,
+                                total));
         log.info(
                 "BUY user={} asset={} qty={} unitPrice={} total={}",
                 userId,
@@ -93,7 +99,12 @@ public class TransactionService {
         Transaction saved =
                 transactionRepository.save(
                         Transaction.of(
-                                wallet.getUser(), asset, TransactionType.SELL, quantity, unitPrice, proceeds));
+                                wallet.getUser(),
+                                asset,
+                                TransactionType.SELL,
+                                quantity,
+                                unitPrice,
+                                proceeds));
         log.info(
                 "SELL user={} asset={} qty={} unitPrice={} total={}",
                 userId,
@@ -126,7 +137,9 @@ public class TransactionService {
         return walletRepository
                 .findByUserIdForUpdate(userId)
                 .orElseThrow(
-                        () -> new NotFoundException("Wallet for user %s does not exist.".formatted(userId)));
+                        () ->
+                                new NotFoundException(
+                                        "Wallet for user %s does not exist.".formatted(userId)));
     }
 
     private static void requirePositive(BigDecimal quantity) {

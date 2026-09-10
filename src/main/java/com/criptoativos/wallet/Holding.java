@@ -26,7 +26,9 @@ import java.util.UUID;
 @Table(
         name = "holdings",
         uniqueConstraints =
-                @UniqueConstraint(name = "uq_holdings_wallet_asset", columnNames = {"wallet_id", "asset_id"}))
+                @UniqueConstraint(
+                        name = "uq_holdings_wallet_asset",
+                        columnNames = {"wallet_id", "asset_id"}))
 public class Holding {
 
     @Id @GeneratedValue private UUID id;
@@ -64,7 +66,10 @@ public class Holding {
         BigDecimal addedCost = addedQuantity.multiply(unitPrice);
         BigDecimal newQuantity = this.quantity.add(addedQuantity);
         this.averageCost =
-                Money.units(existingCost.add(addedCost).divide(newQuantity, Money.UNIT_SCALE, Money.ROUNDING));
+                Money.units(
+                        existingCost
+                                .add(addedCost)
+                                .divide(newQuantity, Money.UNIT_SCALE, Money.ROUNDING));
         this.quantity = Money.units(newQuantity);
     }
 
