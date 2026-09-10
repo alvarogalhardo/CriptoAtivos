@@ -36,4 +36,13 @@ class CpfValidatorTest {
     void nullIsDelegatedToNotNull() {
         assertThat(validator.isValid(null, null)).isTrue();
     }
+
+    /** Guards the fixture generator: a bad CPF there would fail tests for the wrong reason. */
+    @Test
+    void everyGeneratedTestCpfIsValid() {
+        for (int i = 0; i < 500; i++) {
+            String cpf = com.criptoativos.support.TestFixtures.generateCpf(i);
+            assertThat(validator.isValid(cpf, null)).as("generated CPF %s at index %d", cpf, i).isTrue();
+        }
+    }
 }

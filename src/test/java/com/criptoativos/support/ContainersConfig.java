@@ -20,4 +20,12 @@ public class ContainersConfig {
     PostgreSQLContainer<?> postgresContainer() {
         return new PostgreSQLContainer<>("postgres:16-alpine");
     }
+
+    @Bean
+    TestFixtures testFixtures(
+            com.criptoativos.user.UserService userService,
+            com.criptoativos.user.UserRepository userRepository,
+            com.criptoativos.auth.TokenService tokenService) {
+        return new TestFixtures(userService, userRepository, tokenService);
+    }
 }
