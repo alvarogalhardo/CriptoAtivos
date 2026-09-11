@@ -1,0 +1,258 @@
+### CriptoAtivos API — runnable request collection
+#
+# Works with the IntelliJ HTTP Client and the VS Code REST Client extension.
+# Run the requests top to bottom: the login step captures the token that the
+# rest of the file reuses.
+#
+# Start the stack first:  docker compose up -d
+
+@host = http://localhost:8081
+@api = {{host}}/api/v1
+
+### Health — no authentication
+GET {{host}}/actuator/health
+
+### Browse the catalogue — public
+GET {{api}}/assets?size=10&sort=symbol
+
+### One asset — public
+GET {{api}}/assets/BTC
+
+### Exchange supply for an asset — public
+GET {{api}}/assets/BTC/inventory
+
+### Register
+# @name register
+POST {{api}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Ana Maria",
+  "email": "ana@example.com",
+  "password": "s3cret-passw0rd",
+  "cpf": "529.982.247-25"
+}
+
+### Log in and capture the token
+# @name login
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana@example.com",
+  "password": "s3cret-passw0rd"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+%}
+
+@token = {{login.response.body.accessToken}}
+
+### Who am I
+GET {{api}}/users/me
+Authorization: Bearer {{token}}
+
+### Update my profile
+PUT {{api}}/users/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Ana Maria Souza"
+}
+
+### Deposit cash
+POST {{api}}/wallet/deposits
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "amount": 10000.00
+}
+
+### Buy bitcoin
+POST {{api}}/transactions/buy
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "symbol": "BTC",
+  "quantity": 0.01
+}
+
+### Portfolio: cash, positions, and unrealised profit or loss
+GET {{api}}/wallet
+Authorization: Bearer {{token}}
+
+### Sell part of the position
+POST {{api}}/transactions/sell
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "symbol": "BTC",
+  "quantity": 0.005
+}
+
+### Transaction history, newest first
+GET {{api}}/transactions?size=20
+Authorization: Bearer {{token}}
+
+### Transaction history, filtered
+GET {{api}}/transactions?type=BUY&symbol=BTC
+Authorization: Bearer {{token}}
+
+### Withdraw cash
+POST {{api}}/wallet/withdrawals
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "amount": 100.00
+}
+
+
+### ---------------------------------------------------------------------------
+### Two-factor authentication
+### ---------------------------------------------------------------------------
+
+### Step 1: generate a secret. Scan provisioningUri with an authenticator app.
+POST {{api}}/auth/2fa/setup
+Authorization: Bearer {{token}}
+
+### Step 2: confirm with a live code. Returns ten single-use recovery codes.
+POST {{api}}/auth/2fa/confirm
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "code": "000000"
+}
+
+### Step 3: log in again — now returns a challengeToken, not an accessToken.
+# @name challenge
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana@example.com",
+  "password": "s3cret-passw0rd"
+}
+
+### Step 4: exchange the challenge for a real token (TOTP or a recovery code).
+POST {{api}}/auth/2fa/verify
+Authorization: Bearer {{challenge.response.body.challengeToken}}
+Content-Type: application/json
+
+{
+  "code": "000000"
+}
+
+### Turn 2FA off
+POST {{api}}/auth/2fa/disable
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "code": "000000"
+}
+
+
+### ---------------------------------------------------------------------------
+### Administration — requires an ADMIN account
+### Default seeded credentials: admin@criptoativos.local / change-me-immediately
+### ---------------------------------------------------------------------------
+
+### Log in as the administrator
+# @name adminLogin
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@criptoativos.local",
+  "password": "change-me-immediately"
+}
+
+@adminToken = {{adminLogin.response.body.accessToken}}
+
+### List accounts
+GET {{api}}/admin/users?size=20
+Authorization: Bearer {{adminToken}}
+
+### Search accounts
+GET {{api}}/admin/users?search=ana
+Authorization: Bearer {{adminToken}}
+
+### Add an asset to the catalogue
+POST {{api}}/assets
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "symbol": "DOT",
+  "name": "Polkadot",
+  "description": "Multi-chain interoperability protocol.",
+  "currentPrice": 6.25,
+  "externalId": "polkadot"
+}
+
+### Restock exchange supply
+PUT {{api}}/assets/DOT/inventory
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "availableQuantity": 5000
+}
+
+### Set a price by hand (useful with PRICE_PROVIDER=manual)
+PATCH {{api}}/assets/DOT/price
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "price": 7.10
+}
+
+### Promote a user to administrator
+PATCH {{api}}/admin/users/{{register.response.body.id}}/role
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "role": "ADMIN"
+}
+
+### Delete an account. Add ?force=true if it still holds cash or positions.
+DELETE {{api}}/admin/users/{{register.response.body.id}}
+Authorization: Bearer {{adminToken}}
+
+
+### ---------------------------------------------------------------------------
+### Error shapes — every failure is an RFC 7807 problem document
+### ---------------------------------------------------------------------------
+
+### 401: no token
+GET {{api}}/wallet
+
+### 400: invalid CPF
+POST {{api}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Invalid",
+  "email": "invalid@example.com",
+  "password": "s3cret-passw0rd",
+  "cpf": "111.111.111-11"
+}
+
+### 422: buying beyond the balance
+POST {{api}}/transactions/buy
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "symbol": "BTC",
+  "quantity": 9999
+}

@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: criptoativos-db
+    environment:
+      POSTGRES_DB: criptoativos
+      POSTGRES_USER: criptoativos
+      POSTGRES_PASSWORD: criptoativos
+    ports:
+      - "5432:5432"
+    volumes:
+      - criptoativos-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U criptoativos -d criptoativos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    container_name: criptoativos-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # The container always listens on the standard port; only the host mapping
+      # below sidesteps the 8080 conflict with Docker Desktop's WSL relay.
+      PORT: 8080
+      DB_URL: jdbc:postgresql://postgres:5432/criptoativos
+      DB_USER: criptoativos
+      DB_PASSWORD: criptoativos
+      # Keys are mounted, never built into the image.
+      JWT_PUBLIC_KEY: file:/run/secrets/public.pem
+      JWT_PRIVATE_KEY: file:/run/secrets/private.pem
+      ENCRYPTION_PASSWORD: ${ENCRYPTION_PASSWORD:-dev-only-change-me}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-me-immediately}
+      PRICE_PROVIDER: ${PRICE_PROVIDER:-coingecko}
+    volumes:
+      - ./src/main/resources/certs:/run/secrets:ro
+    # 8080 on the host is commonly taken by Docker Desktop's WSL relay on Windows.
+    ports:
+      - "8081:8080"
+
+volumes:
+  criptoativos-pgdata:
