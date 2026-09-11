@@ -3,8 +3,10 @@ package com.criptoativos.operation;
 import com.criptoativos.common.SecurityUtils;
 import com.criptoativos.operation.dto.TransactionDtos.TradeRequest;
 import com.criptoativos.operation.dto.TransactionDtos.TransactionResponse;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import java.time.Instant;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -46,6 +48,7 @@ public class TransactionController {
     }
 
     @GetMapping
+    @PageableAsQueryParam
     public Page<TransactionResponse> history(
             @RequestParam(required = false) TransactionType type,
             @RequestParam(required = false) String symbol,
@@ -54,6 +57,7 @@ public class TransactionController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                     Instant to,
             @PageableDefault(size = 20, sort = "occurredAt", direction = Sort.Direction.DESC)
+                    @Parameter(hidden = true)
                     Pageable pageable) {
         return transactionService
                 .history(SecurityUtils.currentUserId(), type, symbol, from, to, pageable)

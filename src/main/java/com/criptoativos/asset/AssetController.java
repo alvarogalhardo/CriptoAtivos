@@ -3,7 +3,9 @@ package com.criptoativos.asset;
 import com.criptoativos.asset.dto.AssetDtos.AssetResponse;
 import com.criptoativos.asset.dto.AssetDtos.CreateCryptoAssetRequest;
 import com.criptoativos.asset.dto.AssetDtos.UpdatePriceRequest;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,8 +32,10 @@ public class AssetController {
     }
 
     @GetMapping
+    @PageableAsQueryParam
     public Page<AssetResponse> list(
             @PageableDefault(size = 20, sort = "symbol", direction = Sort.Direction.ASC)
+                    @Parameter(hidden = true)
                     Pageable pageable) {
         return assetService.list(pageable).map(AssetResponse::from);
     }

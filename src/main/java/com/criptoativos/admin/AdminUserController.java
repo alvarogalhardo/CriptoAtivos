@@ -3,8 +3,10 @@ package com.criptoativos.admin;
 import com.criptoativos.admin.dto.AdminDtos.AdminUserResponse;
 import com.criptoativos.admin.dto.AdminDtos.ChangeRoleRequest;
 import com.criptoativos.common.SecurityUtils;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import java.util.UUID;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -34,9 +36,11 @@ public class AdminUserController {
     }
 
     @GetMapping
+    @PageableAsQueryParam
     public Page<AdminUserResponse> list(
             @RequestParam(required = false) String search,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+                    @Parameter(hidden = true)
                     Pageable pageable) {
         return adminUserService.list(search, pageable);
     }
