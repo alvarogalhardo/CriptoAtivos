@@ -1,11 +1,15 @@
 package com.criptoativos.common;
 
 import com.criptoativos.common.exception.DomainException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.hibernate.query.sqm.PathElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -78,6 +82,66 @@ public class ApiExceptionHandler {
         problem.setTitle("Access denied");
         problem.setType(URI.create(TYPE_PREFIX + "AccessDenied"));
         return problem;
+    }
+
+    /**
+     * An unknown {@code sort} property is a client mistake, not a server fault. Without this it
+     * surfaces as a 500 saying "an unexpected error occurred", which tells the caller nothing.
+     */
+    @ExceptionHandler(PropertyReferenceException.class)
+    ProblemDetail handleUnknownSortProperty(PropertyReferenceException ex) {
+        ProblemDetail problem =
+                ProblemDetail.forStatusAndDetail(
+                        HttpStatus.BAD_REQUEST,
+                        "Cannot sort by '%s': no such property on %s."
+                                .formatted(
+                                        ex.getPropertyName(),
+                                        ex.getType().getType().getSimpleName()));
+        problem.setTitle("Invalid sort property");
+        problem.setType(URI.create(TYPE_PREFIX + "InvalidSortProperty"));
+        problem.setProperty("property", ex.getPropertyName());
+        return problem;
+    }
+
+    /**
+     * Repositories declaring an explicit {@code @Query} take a different route: Spring Data appends
+     * the ORDER BY and Hibernate, not Spring Data, rejects the unknown attribute. Detected by cause
+     * type rather than by parsing a message, so genuine data-access misuse still surfaces as 500.
+     */
+    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+    ProblemDetail handleInvalidDataAccessUsage(
+            InvalidDataAccessApiUsageException ex, HttpServletRequest request) {
+        if (!hasUnknownPathCause(ex)) {
+            log.error("Invalid data access usage", ex);
+            return handleUnexpected(ex);
+        }
+        String[] sort = request.getParameterValues("sort");
+        ProblemDetail problem =
+                ProblemDetail.forStatusAndDetail(
+                        HttpStatus.BAD_REQUEST,
+                        "Cannot sort by %s: no such property."
+                                .formatted(
+                                        sort == null
+                                                ? "the requested property"
+                                                : String.join(", ", sort)));
+        problem.setTitle("Invalid sort property");
+        problem.setType(URI.create(TYPE_PREFIX + "InvalidSortProperty"));
+        if (sort != null) {
+            problem.setProperty("property", String.join(",", sort));
+        }
+        return problem;
+    }
+
+    private static boolean hasUnknownPathCause(Throwable throwable) {
+        for (Throwable cause = throwable; cause != null; cause = cause.getCause()) {
+            if (cause instanceof PathElementException) {
+                return true;
+            }
+            if (cause.getCause() == cause) {
+                break;
+            }
+        }
+        return false;
     }
 
     /** Last resort: log the cause in full, but never leak it to the client. */
