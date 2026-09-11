@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build, test and verify coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      # The signing keys are never committed, so CI mints a throwaway pair.
+      - name: Generate JWT signing keys
+        run: |
+          mkdir -p src/main/resources/certs
+          openssl genrsa -out src/main/resources/certs/private.pem 2048
+          openssl rsa -in src/main/resources/certs/private.pem \
+            -pubout -out src/main/resources/certs/public.pem
+
+      # Testcontainers starts Postgres; the GitHub runner already has Docker.
+      - name: Build, test and check coverage
+        env:
+          ENCRYPTION_PASSWORD: ci-only-encryption-password
+          ENCRYPTION_SALT: 5c0744940b5c369b
+        run: ./mvnw -B --no-transfer-progress clean verify
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+          if-no-files-found: warn
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            target/surefire-reports/
+            target/failsafe-reports/
+
+  docker:
+    name: Build the container image
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The default docker driver cannot export a build cache; buildx can.
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: criptoativos-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

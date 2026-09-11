@@ -1,0 +1,10 @@
+target/
+.git/
+.idea/
+docs/
+*.md
+.github/
+
+# Signing keys must never be baked into the image. They are mounted at runtime
+# and located through JWT_PUBLIC_KEY / JWT_PRIVATE_KEY.
+src/main/resources/certs/

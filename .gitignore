@@ -1,38 +1,34 @@
+# Build output
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
-*.iws
-*.iml
-*.ipr
-
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+out/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+*.class
 
-### VS Code ###
+# Maven
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/.gradle-enterprise/
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
 .vscode/
+.settings/
+.classpath
+.project
+.apt_generated
+.factorypath
 
-### Mac OS ###
+# Secrets — never commit signing keys
+src/main/resources/certs/*.pem
+.env
+.env.*
+!.env.example
+
+# OS
 .DS_Store
+Thumbs.db
+
+# only-script wrapper needs no jar
+.mvn/wrapper/maven-wrapper.jar
