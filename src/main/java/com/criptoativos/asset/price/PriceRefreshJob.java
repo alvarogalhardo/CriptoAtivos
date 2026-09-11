@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,28 @@ public class PriceRefreshJob {
     public PriceRefreshJob(AssetRepository assetRepository, PriceProvider priceProvider) {
         this.assetRepository = assetRepository;
         this.priceProvider = priceProvider;
+    }
+
+    /**
+     * Fetches prices once as soon as the application is ready.
+     *
+     * <p>Without this, a freshly started instance serves zero prices until the first cron tick,
+     * which can be up to five minutes of an API that looks broken.
+     */
+    // @Transactional must sit here, not only on refresh(): the inner call is
+    // self-invocation and bypasses the proxy, but the event listener itself is
+    // invoked through it.
+    @EventListener(ApplicationReadyEvent.class)
+    @Transactional
+    public void refreshOnStartup() {
+        try {
+            refresh();
+        } catch (RuntimeException ex) {
+            // Startup must never depend on a third party being reachable.
+            log.warn(
+                    "Initial price refresh failed ({}); the scheduled job will retry",
+                    ex.getMessage());
+        }
     }
 
     @Scheduled(cron = "${app.prices.refresh-cron}")
